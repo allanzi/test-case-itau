@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  app:
+    image: maven:3.8.5-openjdk-17-slim
+    container_name: insurance-quote-api
+    ports:
+      - "8080:8080"
+      - "35729:35729"
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: mvn spring-boot:run
+    depends_on:
+      - mockserver
+      - rabbitmq
+      - mongodb
+      - redis
+
+  mockserver:
+    image: mockserver/mockserver:latest
+    container_name: catalog-service-api
+    ports:
+      - "1080:1080"
+    environment:
+      MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/spec.json
+      MOCKSERVER_WATCH_INITIALIZATION_JSON: "true"
+    volumes:
+      - ./.docker/mockserver:/config
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: insurance-queue
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: Insurance@123!
+
+  mongodb:
+    image: bitnami/mongodb:latest
+    container_name: insurance-db
+    ports:
+      - "27017:27017"
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      ALLOW_EMPTY_PASSWORD: 'yes'
+      MONGO_INITDB_DATABASE: insurance_quote_db
+    volumes:
+      - ./.docker/mongodb:/bitnami/mongodb
+
+  redis:
+    image: redis:latest
+    container_name: insurance-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.docker/redis:/data

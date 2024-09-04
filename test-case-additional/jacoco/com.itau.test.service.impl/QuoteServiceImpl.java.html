@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QuoteServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">test-case</a> &gt; <a href="index.source.html" class="el_package">com.itau.test.service.impl</a> &gt; <span class="el_source">QuoteServiceImpl.java</span></div><h1>QuoteServiceImpl.java</h1><pre class="source lang-java linenums">package com.itau.test.service.impl;
+
+import com.itau.test.domain.entity.InsurancePolicy;
+import com.itau.test.domain.entity.QuoteEntity;
+import com.itau.test.domain.request.QuoteRequest;
+import com.itau.test.domain.response.OfferCatalogResponse;
+import com.itau.test.domain.response.ProductCatalogResponse;
+import com.itau.test.domain.response.QuoteResponse;
+import com.itau.test.exception.model.CommonException;
+import com.itau.test.mapper.QuoteMapper;
+import com.itau.test.repository.QuoteRepository;
+import com.itau.test.rest.HttpClient;
+import com.itau.test.service.QuoteService;
+import com.itau.test.util.CacheUtil;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.itau.test.exception.model.CommonErrorCodesEnum.*;
+
+@Service
+<span class="fc" id="L32">@RequiredArgsConstructor</span>
+public class QuoteServiceImpl implements QuoteService {
+
+    @Value(&quot;${catalog.url}&quot;)
+    private String catalogUrl;
+
+    private final QuoteValidationService quoteValidationService;
+    private final SequenceGeneratorService sequenceGeneratorService;
+    private final CacheUtil cacheUtil;
+    private final QuoteMapper mapper;
+    private final QuoteRepository repository;
+    private final HttpClient httpClient;
+
+<span class="fc" id="L45">    private static final Logger LOGGER = LoggerFactory.getLogger(QuoteServiceImpl.class);</span>
+
+    private static final String CACHE_KEY_PRODUCTS = &quot;products&quot;;
+    private static final String CACHE_KEY_OFFERS = &quot;offers&quot;;
+    private static final String ERROR_FETCHING_PRODUCT = &quot;Error fetching product: {}. Error message: {}&quot;;
+    private static final String ERROR_FETCHING_OFFER = &quot;Error fetching offer: {}. Error message: {}&quot;;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;QuoteResponse&gt; getQuotes() {
+<span class="fc" id="L55">        List&lt;QuoteEntity&gt; quotes = repository.findAll();</span>
+<span class="fc" id="L56">        return mapper.entitiesToResponses(quotes);</span>
+    }
+
+    @Override
+    public QuoteResponse requestQuote(QuoteRequest quoteRequest) {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (!isValidProduct(quoteRequest.getProduct_id())) {</span>
+<span class="fc" id="L62">            throw new CommonException(COMMON_ERROR_422_001, &quot;Product&quot;);</span>
+        }
+
+<span class="fc" id="L65">        OfferCatalogResponse offer = getOffer(quoteRequest.getOffer_id());</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (offer == null) {</span>
+<span class="nc" id="L67">            throw new CommonException(COMMON_ERROR_422_001, &quot;Offer&quot;);</span>
+        }
+
+<span class="fc" id="L70">        quoteValidationService.validateCoverages(quoteRequest, offer);</span>
+<span class="fc" id="L71">        quoteValidationService.validateAssistances(quoteRequest, offer);</span>
+<span class="fc" id="L72">        quoteValidationService.validateTotalMonthlyPremiumAmount(quoteRequest, offer);</span>
+<span class="fc" id="L73">        quoteValidationService.validateTotalCoverageAmount(quoteRequest);</span>
+
+<span class="fc" id="L75">        QuoteEntity quote = mapper.requestToEntity(quoteRequest);</span>
+<span class="fc" id="L76">        quote.setId(sequenceGeneratorService.generateSequence(QuoteEntity.SEQUENCE_NAME));</span>
+<span class="fc" id="L77">        quote = repository.insert(quote);</span>
+
+<span class="fc" id="L79">        return mapper.entityToResponse(quote);</span>
+    }
+
+    @Override
+    public void updatePolicy(InsurancePolicy policy) {
+<span class="fc" id="L84">        long quoteId = policy.getQuote_id();</span>
+<span class="fc" id="L85">        String policyId = policy.getInsurance_policy_id();</span>
+<span class="fc" id="L86">        String createdAt = policy.getCreated_at();</span>
+
+<span class="fc" id="L88">        QuoteEntity quote = repository.findOne(quoteId)</span>
+<span class="fc" id="L89">                .orElseThrow(() -&gt; new CommonException(COMMON_ERROR_404_001, &quot;Quote&quot;, quoteId));</span>
+
+<span class="fc" id="L91">        quote.setPolicy_id(policyId);</span>
+<span class="fc" id="L92">        quote.setPolicty_created_at(createdAt);</span>
+<span class="fc" id="L93">        repository.save(quote);</span>
+<span class="fc" id="L94">    }</span>
+
+    private boolean isValidProduct(String productId) {
+        try {
+<span class="fc" id="L98">            ProductCatalogResponse product = cacheUtil.getCachedResponse(CACHE_KEY_PRODUCTS, productId,</span>
+                    ProductCatalogResponse.class);
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if (product != null) {</span>
+<span class="fc" id="L101">                return product.getActive();</span>
+            }
+
+<span class="fc" id="L104">            String productUri = String.format(&quot;%s/products/%s&quot;, catalogUrl, productId);</span>
+<span class="fc" id="L105">            ResponseEntity&lt;ProductCatalogResponse&gt; response = httpClient.getRestTemplate()</span>
+<span class="nc" id="L106">                    .exchange(</span>
+                            productUri,
+                            HttpMethod.GET,
+<span class="fc" id="L109">                            new HttpEntity&lt;&gt;(HttpClient.getBasicHttpHeaders()),</span>
+<span class="fc" id="L110">                            new ParameterizedTypeReference&lt;&gt;() {</span>
+                            });
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (!response.hasBody()) {</span>
+<span class="nc" id="L114">                return false;</span>
+            }
+
+<span class="nc" id="L117">            product = response.getBody();</span>
+<span class="nc" id="L118">            cacheUtil.cacheResponse(CACHE_KEY_PRODUCTS, productId, product);</span>
+
+<span class="nc" id="L120">            return product.getActive();</span>
+<span class="fc" id="L121">        } catch (Exception e) {</span>
+<span class="fc" id="L122">            LOGGER.warn(ERROR_FETCHING_PRODUCT, productId, e.getMessage());</span>
+<span class="fc" id="L123">            return false;</span>
+        }
+    }
+
+    private OfferCatalogResponse getOffer(String offerId) {
+        try {
+<span class="fc" id="L129">            OfferCatalogResponse offer = cacheUtil.getCachedResponse(CACHE_KEY_OFFERS, offerId, OfferCatalogResponse.class);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">            if (offer != null) {</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">                return offer.getActive() ? offer : null;</span>
+            }
+
+<span class="nc" id="L134">            String offerUri = String.format(&quot;%s/offers/%s&quot;, catalogUrl, offerId);</span>
+<span class="nc" id="L135">            ResponseEntity&lt;OfferCatalogResponse&gt; response = httpClient.getRestTemplate()</span>
+<span class="nc" id="L136">                    .exchange(</span>
+                            offerUri,
+                            HttpMethod.GET,
+<span class="nc" id="L139">                            new HttpEntity&lt;&gt;(HttpClient.getBasicHttpHeaders()),</span>
+<span class="nc" id="L140">                            new ParameterizedTypeReference&lt;&gt;() {</span>
+                            });
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (!response.hasBody()) {</span>
+<span class="nc" id="L144">                return null;</span>
+            }
+
+<span class="nc" id="L147">            offer = response.getBody();</span>
+<span class="nc" id="L148">            cacheUtil.cacheResponse(CACHE_KEY_OFFERS, offerId, offer);</span>
+
+<span class="nc bnc" id="L150" title="All 2 branches missed.">            return offer.getActive() ? offer : null;</span>
+<span class="nc" id="L151">        } catch (Exception e) {</span>
+<span class="nc" id="L152">            LOGGER.warn(ERROR_FETCHING_OFFER, offerId, e.getMessage());</span>
+<span class="nc" id="L153">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">test-case</a> &gt; <a href="index.source.html" class="el_package">com.itau.test.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.itau.test.exception;
+
+import com.itau.test.exception.model.ClientException;
+import com.itau.test.exception.model.CommonException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.util.ObjectUtils;
+import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+import java.util.Objects;
+
+import static com.itau.test.exception.model.CommonErrorCodesEnum.COMMON_ERROR_500_000;
+import static com.itau.test.util.ObjectMapperUtil.objectMapper;
+
+@ControllerAdvice
+<span class="nc" id="L33">@RequiredArgsConstructor</span>
+@PropertySources(@PropertySource(&quot;classpath:common-error-messages.properties&quot;))
+public class GlobalExceptionHandler {
+
+    private final Environment env;
+
+<span class="nc" id="L39">    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);</span>
+
+    @ResponseBody
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleException(Exception exception) {
+<span class="nc" id="L44">        LOGGER.error(&quot;Exception thrown:&quot;, exception);</span>
+<span class="nc" id="L45">        return parseExceptionMessage(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleIllegalStateException(IllegalStateException exception) {
+<span class="nc" id="L51">        LOGGER.error(&quot;IllegalStateException thrown:&quot;, exception);</span>
+<span class="nc" id="L52">        return parseExceptionMessage(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleIllegalArgumentException(IllegalArgumentException exception) {
+<span class="nc" id="L58">        LOGGER.error(&quot;IllegalArgumentException thrown:&quot;, exception);</span>
+<span class="nc" id="L59">        return parseExceptionMessage(HttpStatus.BAD_REQUEST, exception.getMessage());</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleConstraintViolationException(ConstraintViolationException exception) {
+<span class="nc" id="L65">        LOGGER.error(&quot;ConstraintViolationException thrown:&quot;, exception);</span>
+<span class="nc" id="L66">        return parseExceptionMessage(HttpStatus.BAD_REQUEST, exception.getMessage());</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException exception) {
+<span class="nc" id="L72">        LOGGER.error(&quot;HttpMediaTypeNotSupportedException thrown:&quot;, exception);</span>
+<span class="nc" id="L73">        return parseExceptionMessage(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exception.getMessage());</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+<span class="nc" id="L79">        LOGGER.error(&quot;HttpMessageNotReadableException thrown:&quot;, exception);</span>
+<span class="nc" id="L80">        return parseExceptionMessage(HttpStatus.BAD_REQUEST, exception.getMessage());</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+<span class="nc" id="L86">        LOGGER.error(&quot;HttpRequestMethodNotSupportedException thrown:&quot;, exception);</span>
+
+<span class="nc" id="L88">        String errorMessage = exception.getMessage();</span>
+<span class="nc" id="L89">        var supportedHttpMethods = exception.getSupportedMethods();</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (!ObjectUtils.isEmpty(supportedHttpMethods)) {</span>
+<span class="nc" id="L91">            errorMessage += &quot;. Supported methods: &quot; + String.join(&quot;, &quot;, supportedHttpMethods);</span>
+        }
+
+<span class="nc" id="L94">        return parseExceptionMessage(HttpStatus.METHOD_NOT_ALLOWED, errorMessage);</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+<span class="nc" id="L100">        LOGGER.error(&quot;MethodArgumentNotValidException thrown:&quot;, exception);</span>
+
+<span class="nc" id="L102">        String errorMessage = null;</span>
+<span class="nc" id="L103">        List&lt;FieldError&gt; fieldErrors = exception.getBindingResult().getFieldErrors();</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (!fieldErrors.isEmpty()) {</span>
+<span class="nc" id="L105">            errorMessage = fieldErrors.stream()</span>
+<span class="nc" id="L106">                    .map(FieldError::getDefaultMessage)</span>
+<span class="nc" id="L107">                    .toList()</span>
+<span class="nc" id="L108">                    .toString();</span>
+        }
+
+<span class="nc" id="L111">        return parseExceptionMessage(HttpStatus.BAD_REQUEST, errorMessage);</span>
+    }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleTransactionSystemException(TransactionSystemException exception) {
+<span class="nc" id="L116">        LOGGER.error(&quot;TransactionSystemException thrown:&quot;, exception);</span>
+
+<span class="nc" id="L118">        var errorMessage = &quot;An error occurred during transaction processing&quot;;</span>
+<span class="nc" id="L119">        var rootCause = exception.getRootCause();</span>
+<span class="nc bnc" id="L120" title="All 4 branches missed.">        if (rootCause != null &amp;&amp; !ObjectUtils.isEmpty(rootCause.getMessage())) {</span>
+<span class="nc" id="L121">            errorMessage += &quot;. Root cause: &quot; + rootCause.getMessage();</span>
+        }
+
+<span class="nc" id="L124">        return parseExceptionMessage(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ClientException.class)
+    public ResponseEntity&lt;ExceptionResponse&gt; handleClientException(ClientException exception) {
+<span class="nc" id="L130">        LOGGER.error(&quot;ClientException thrown:&quot;, exception);</span>
+<span class="nc" id="L131">        return parseClientExceptionMessage(exception.getHttpStatus(), exception.getMessage(), exception.getCause());</span>
+    }
+
+    @ResponseBody
+    @ExceptionHandler(CommonException.class)
+    public ExceptionResponse handleCommonException(CommonException exception, HttpServletResponse response) {
+<span class="nc" id="L137">        LOGGER.error(&quot;CommonException thrown:&quot;, exception);</span>
+<span class="nc" id="L138">        return parseCommonExceptionMessage(exception, response);</span>
+    }
+
+    private ResponseEntity&lt;ExceptionResponse&gt; parseExceptionMessage(final HttpStatus httpStatus, final String message) {
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        var errorHttpStatus = ObjectUtils.isEmpty(httpStatus) ? HttpStatus.INTERNAL_SERVER_ERROR : httpStatus;</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        var errorMessage = ObjectUtils.isEmpty(message) ? &quot;No defined message&quot; : message;</span>
+
+<span class="nc" id="L145">        return ResponseEntity.status(httpStatus).body(new ExceptionResponse(errorHttpStatus, null, errorMessage,</span>
+<span class="nc" id="L146">                System.currentTimeMillis(), null));</span>
+    }
+
+    private ResponseEntity&lt;ExceptionResponse&gt; parseClientExceptionMessage(final HttpStatus httpStatus, final String message,
+            final Throwable cause) {
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        var errorHttpStatus = ObjectUtils.isEmpty(httpStatus) ? HttpStatus.INTERNAL_SERVER_ERROR : httpStatus;</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        var errorMessage = ObjectUtils.isEmpty(message) ? &quot;No defined message&quot; : message;</span>
+
+<span class="nc" id="L154">        Object clientErrorObj = null;</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (cause != null) {</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            var clientErrorMessage = ObjectUtils.isEmpty(cause.getMessage()) ? null : cause.getMessage();</span>
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">            if (!ObjectUtils.isEmpty(clientErrorMessage)) {</span>
+<span class="nc" id="L159">                clientErrorObj = extractJsonObject(clientErrorMessage);</span>
+            }
+        }
+
+<span class="nc" id="L163">        return ResponseEntity.status(httpStatus).body(new ExceptionResponse(errorHttpStatus, null, errorMessage, System.currentTimeMillis(),</span>
+                clientErrorObj));
+    }
+
+    ExceptionResponse parseCommonExceptionMessage(final CommonException exception, HttpServletResponse response) {
+<span class="nc" id="L168">        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());</span>
+<span class="nc" id="L169">        var exceptionResponse = new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, COMMON_ERROR_500_000.toString(), &quot;&quot;,</span>
+<span class="nc" id="L170">                System.currentTimeMillis(), null);</span>
+
+<span class="nc" id="L172">        var propertyKey = exception.getErrorCode().propertyKey();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        if (Objects.isNull(propertyKey)) {</span>
+<span class="nc" id="L174">            var errorMsg = &quot;Basic error handling failure: null errorCode&quot;;</span>
+<span class="nc" id="L175">            exceptionResponse.setMessage(errorMsg);</span>
+
+<span class="nc" id="L177">            LOGGER.error(errorMsg);</span>
+<span class="nc" id="L178">            return exceptionResponse;</span>
+        }
+
+<span class="nc" id="L181">        var properties = env.getProperty(propertyKey);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (Objects.isNull(properties)) {</span>
+<span class="nc" id="L183">            var errorMsg = String.format(&quot;Basic error handling failure: no properties found for %s&quot;, propertyKey);</span>
+<span class="nc" id="L184">            exceptionResponse.setMessage(errorMsg);</span>
+
+<span class="nc" id="L186">            LOGGER.error(errorMsg);</span>
+<span class="nc" id="L187">            return exceptionResponse;</span>
+        }
+
+<span class="nc" id="L190">        var formatArray = properties.split(&quot;\\|&quot;);</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        if (formatArray.length &lt; 2) {</span>
+<span class="nc" id="L192">            var errorMsg = String.format(&quot;Basic error handling failure: badly formatted message %s&quot;, properties);</span>
+<span class="nc" id="L193">            exceptionResponse.setMessage(errorMsg);</span>
+
+<span class="nc" id="L195">            LOGGER.error(errorMsg);</span>
+<span class="nc" id="L196">            return exceptionResponse;</span>
+        }
+
+        try {
+<span class="nc" id="L200">            int httpStatusCode = Integer.parseInt(formatArray[0]);</span>
+<span class="nc" id="L201">            response.setStatus(httpStatusCode);</span>
+<span class="nc" id="L202">            exceptionResponse.setStatus(HttpStatus.valueOf(httpStatusCode));</span>
+<span class="nc" id="L203">            exceptionResponse.setCode(propertyKey);</span>
+<span class="nc" id="L204">            exceptionResponse.setMessage(String.format(formatArray[1], exception.getArgs()));</span>
+<span class="nc" id="L205">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L206">            var errorMsg = String.format(&quot;Basic error handling failure: could not get http status code from %s&quot;, properties);</span>
+<span class="nc" id="L207">            exceptionResponse.setMessage(errorMsg);</span>
+
+<span class="nc" id="L209">            LOGGER.error(errorMsg);</span>
+<span class="nc" id="L210">            return exceptionResponse;</span>
+<span class="nc" id="L211">        }</span>
+
+<span class="nc" id="L213">        LOGGER.info(&quot;The message error is: {}&quot;, exceptionResponse.getMessage());</span>
+<span class="nc" id="L214">        return exceptionResponse;</span>
+    }
+
+    private Object extractJsonObject(String clientErrorMessage) {
+        try {
+<span class="nc" id="L219">            int startIndex = clientErrorMessage.indexOf('{');</span>
+<span class="nc" id="L220">            int endIndex = clientErrorMessage.lastIndexOf('}') + 1;</span>
+<span class="nc" id="L221">            String jsonString = clientErrorMessage.substring(startIndex, endIndex);</span>
+
+<span class="nc" id="L223">            return objectMapper.readValue(jsonString, Object.class);</span>
+<span class="nc" id="L224">        } catch (Exception e) {</span>
+<span class="nc" id="L225">            LOGGER.warn(&quot;Error parsing JSON string to JSON object&quot;, e);</span>
+<span class="nc" id="L226">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

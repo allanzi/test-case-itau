@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QuoteRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">test-case</a> &gt; <a href="index.source.html" class="el_package">com.itau.test.domain.request</a> &gt; <span class="el_source">QuoteRequest.java</span></div><h1>QuoteRequest.java</h1><pre class="source lang-java linenums">package com.itau.test.domain.request;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
+@Getter
+<span class="pc" id="L17">@Setter</span>
+<span class="nc" id="L18">@ToString</span>
+<span class="pc" id="L19">@Builder</span>
+<span class="fc" id="L20">@AllArgsConstructor</span>
+<span class="fc" id="L21">@NoArgsConstructor</span>
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class QuoteRequest {
+
+    @NotBlank(message = &quot;product_id is mandatory&quot;)
+<span class="fc" id="L27">    private String product_id;</span>
+
+    @NotBlank(message = &quot;offer_id is mandatory&quot;)
+<span class="fc" id="L30">    private String offer_id;</span>
+
+    @NotBlank(message = &quot;category is mandatory&quot;)
+<span class="fc" id="L33">    private String category;</span>
+
+    @NotNull(message = &quot;total_monthly_premium_amount is mandatory&quot;)
+<span class="fc" id="L36">    private BigDecimal total_monthly_premium_amount;</span>
+
+    @NotNull(message = &quot;total_coverage_amount is mandatory&quot;)
+<span class="fc" id="L39">    private BigDecimal total_coverage_amount;</span>
+
+    @NotNull(message = &quot;coverages is mandatory&quot;)
+<span class="fc" id="L42">    private Map&lt;String, BigDecimal&gt; coverages;</span>
+
+    @NotNull(message = &quot;assistances is mandatory&quot;)
+<span class="fc" id="L45">    private List&lt;String&gt; assistances;</span>
+
+    @Valid
+    @NotNull(message = &quot;customer is mandatory&quot;)
+<span class="fc" id="L49">    private Customer customer;</span>
+
+    @Getter
+<span class="pc" id="L52">    @Setter</span>
+<span class="nc" id="L53">    @ToString</span>
+<span class="pc" id="L54">    @Builder</span>
+<span class="fc" id="L55">    @AllArgsConstructor</span>
+<span class="fc" id="L56">    @NoArgsConstructor</span>
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Customer {
+
+        @NotBlank(message = &quot;document_number is mandatory&quot;)
+<span class="fc" id="L62">        private String document_number;</span>
+
+        @NotBlank(message = &quot;name is mandatory&quot;)
+<span class="fc" id="L65">        private String name;</span>
+
+        @NotBlank(message = &quot;type is mandatory&quot;)
+<span class="fc" id="L68">        private String type;</span>
+
+        @NotBlank(message = &quot;gender is mandatory&quot;)
+<span class="fc" id="L71">        private String gender;</span>
+
+        @JsonFormat(pattern = &quot;yyyy-MM-dd&quot;)
+        @NotNull(message = &quot;date_of_birth is mandatory&quot;)
+<span class="fc" id="L75">        private LocalDate date_of_birth;</span>
+
+        @NotBlank(message = &quot;email is mandatory&quot;)
+        @Pattern(regexp = &quot;.+@.+\\..+&quot;, message = &quot;email should be a valid email&quot;)
+<span class="fc" id="L79">        private String email;</span>
+
+        @NotNull(message = &quot;phone_number is mandatory&quot;)
+<span class="fc" id="L82">        private Long phone_number;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

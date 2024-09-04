@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SequenceGeneratorService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">test-case</a> &gt; <a href="index.source.html" class="el_package">com.itau.test.service.impl</a> &gt; <span class="el_source">SequenceGeneratorService.java</span></div><h1>SequenceGeneratorService.java</h1><pre class="source lang-java linenums">package com.itau.test.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Service;
+
+import com.itau.test.domain.entity.SequenceEntity;
+
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+
+import java.util.Objects;
+
+@Service
+<span class="fc" id="L17">public class SequenceGeneratorService {</span>
+
+    @Autowired
+    private MongoOperations mongoOperations;
+
+    public long generateSequence(String seqName) {
+<span class="fc" id="L23">        SequenceEntity counter = mongoOperations.findAndModify(</span>
+<span class="fc" id="L24">                Query.query(Criteria.where(&quot;_id&quot;).is(seqName)),</span>
+<span class="fc" id="L25">                new Update().inc(&quot;seq&quot;, 1),</span>
+<span class="fc" id="L26">                FindAndModifyOptions.options().returnNew(true).upsert(true),</span>
+                SequenceEntity.class);
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        return !Objects.isNull(counter) ? counter.getSeq() : 1;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

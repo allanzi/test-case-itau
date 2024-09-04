@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HttpClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">test-case</a> &gt; <a href="index.source.html" class="el_package">com.itau.test.rest</a> &gt; <span class="el_source">HttpClient.java</span></div><h1>HttpClient.java</h1><pre class="source lang-java linenums">package com.itau.test.rest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
+
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+@Component
+public class HttpClient extends AbstractRestTemplate {
+
+<span class="fc" id="L19">    private static final Logger LOGGER = LoggerFactory.getLogger(HttpClient.class);</span>
+
+    @Autowired
+    public HttpClient(@Value(&quot;${connection.timeout:3000}&quot;) String connTimeout, @Value(&quot;${connection.read.timeout:5000}&quot;) String connReadTimeout)
+            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+<span class="fc" id="L24">        super(new ConnectionProps(connTimeout, new ConnectionProps.Read(connReadTimeout)));</span>
+<span class="fc" id="L25">    }</span>
+
+    protected void restTemplateSetup() {
+        try {
+<span class="nc" id="L29">            var factory = new SimpleClientHttpRequestFactory();</span>
+<span class="nc" id="L30">            factory.setConnectTimeout(Integer.parseInt(this.connProps.getTimeout()));</span>
+<span class="nc" id="L31">            factory.setReadTimeout(Integer.parseInt(this.connProps.getRead().getTimeout()));</span>
+
+<span class="nc" id="L33">            this.restTemplate.setRequestFactory(factory);</span>
+<span class="nc" id="L34">        } catch (Exception e) {</span>
+<span class="nc" id="L35">            LOGGER.error(&quot;Error creating HttpClient RestTemplate&quot;);</span>
+<span class="nc" id="L36">            throw e;</span>
+<span class="nc" id="L37">        }</span>
+<span class="nc" id="L38">    }</span>
+
+    public static HttpHeaders getBasicHttpHeaders() {
+<span class="fc" id="L41">        var httpHeaders = new HttpHeaders();</span>
+<span class="fc" id="L42">        httpHeaders.setContentType(MediaType.APPLICATION_JSON);</span>
+
+<span class="fc" id="L44">        return httpHeaders;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

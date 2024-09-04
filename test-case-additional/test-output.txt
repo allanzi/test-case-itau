@@ -1,0 +1,108 @@
+# mvn clean test
+[INFO] Scanning for projects...
+[INFO]
+[INFO] -------------------------< com.itau:test-case >-------------------------
+[INFO] Building test-case 0.0.1-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-clean-plugin:3.3.2:clean (default-clean) @ test-case ---
+[INFO] Deleting /app/target
+[INFO]
+[INFO] --- jacoco-maven-plugin:0.8.8:prepare-agent (default) @ test-case ---
+[INFO] argLine set to -javaagent:/root/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=/app/target/jacoco.exec
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ test-case ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ test-case ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 40 source files with javac [debug release 17] to target/classes
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ test-case ---
+[INFO] skip non existing resourceDirectory /app/src/test/resources
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ test-case ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 22 source files with javac [debug release 17] to target/test-classes
+[INFO] /app/src/test/java/com/itau/test/controller/QuoteControllerTest.java: /app/src/test/java/com/itau/test/controller/QuoteControllerTest.java uses or overrides a deprecated API.
+[INFO] /app/src/test/java/com/itau/test/controller/QuoteControllerTest.java: Recompile with -Xlint:deprecation for details.
+[INFO]
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ test-case ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.itau.test.ApplicationTest
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.95 s -- in com.itau.test.ApplicationTest
+[INFO] Running com.itau.test.constant.BusinessConstantTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.370 s -- in com.itau.test.constant.BusinessConstantTest
+[INFO] Running com.itau.test.controller.QuoteControllerTest
+23:31:41.840 [main] INFO com.itau.test.controller.QuoteController -- Post Quote Recevied Queue: QuoteResponse(total_monthly_premium_amount=null, id=null, product_id=null, offer_id=null, category=null, total_coverage_amount=null, coverages=null, assistances=null, customer=null, policy_id=null, policty_created_at=null)
+23:31:41.928 [main] INFO com.itau.test.controller.QuoteController -- Response body: QuoteResponse(total_monthly_premium_amount=null, id=null, product_id=null, offer_id=null, category=null, total_coverage_amount=null, coverages=null, assistances=null, customer=null, policy_id=null, policty_created_at=null)
+23:31:42.128 [main] WARN com.itau.test.controller.QuoteController -- Error sending quote to queue: Queue Error
+23:31:42.128 [main] INFO com.itau.test.controller.QuoteController -- Response body: QuoteResponse(total_monthly_premium_amount=null, id=null, product_id=null, offer_id=null, category=null, total_coverage_amount=null, coverages=null, assistances=null, customer=null, policy_id=null, policty_created_at=null)
+23:31:42.165 [main] INFO com.itau.test.controller.QuoteController -- Response body: [QuoteResponse(total_monthly_premium_amount=null, id=null, product_id=null, offer_id=null, category=null, total_coverage_amount=null, coverages=null, assistances=null, customer=null, policy_id=null, policty_created_at=null)]
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.261 s -- in com.itau.test.controller.QuoteControllerTest
+[INFO] Running com.itau.test.domain.entity.CustomerTest
+23:31:43.229 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.1.Final
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.677 s -- in com.itau.test.domain.entity.CustomerTest
+[INFO] Running com.itau.test.domain.entity.InsurancePolicyTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.421 s -- in com.itau.test.domain.entity.InsurancePolicyTest
+[INFO] Running com.itau.test.domain.entity.QuoteEntityTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.077 s -- in com.itau.test.domain.entity.QuoteEntityTest
+[INFO] Running com.itau.test.domain.entity.SequenceEntityTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in com.itau.test.domain.entity.SequenceEntityTest
+[INFO] Running com.itau.test.domain.request.QuoteRequestTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.576 s -- in com.itau.test.domain.request.QuoteRequestTest
+[INFO] Running com.itau.test.domain.response.CustomerResponseTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.876 s -- in com.itau.test.domain.response.CustomerResponseTest
+[INFO] Running com.itau.test.domain.response.OfferCatalogResponseTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.165 s -- in com.itau.test.domain.response.OfferCatalogResponseTest
+[INFO] Running com.itau.test.domain.response.ProductCatalogResponseTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.328 s -- in com.itau.test.domain.response.ProductCatalogResponseTest
+[INFO] Running com.itau.test.domain.response.QuoteResponseTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.151 s -- in com.itau.test.domain.response.QuoteResponseTest
+[INFO] Running com.itau.test.exception.ExceptionResponseTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in com.itau.test.exception.ExceptionResponseTest
+[INFO] Running com.itau.test.mapper.QuoteMapperTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in com.itau.test.mapper.QuoteMapperTest
+[INFO] Running com.itau.test.queue.consumer.PolicyCreatedConsumerTest
+23:31:50.877 [main] INFO com.itau.test.queue.consumer.PolicyCreatedConsumer -- PolicyCreatedConsumer processed message: {"insurance_policy_id":"1","quote_id":"1","created_at":"2024-09-02T00:00:00Z"}
+23:31:50.919 [main] INFO com.itau.test.queue.consumer.PolicyCreatedConsumer -- PolicyCreatedConsumer processed message: {"insurance_policy_id":"1","quote_id":"1","created_at":"2024-09-02T00:00:00Z"}
+23:31:50.948 [main] INFO com.itau.test.queue.consumer.PolicyCreatedConsumer -- PolicyCreatedConsumer processed message: {"insurance_policy_id":"1","quote_id":"1","created_at":"2024-09-02T00:00:00Z"}
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.982 s -- in com.itau.test.queue.consumer.PolicyCreatedConsumerTest
+[INFO] Running com.itau.test.rest.ConnectionPropsTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s -- in com.itau.test.rest.ConnectionPropsTest
+[INFO] Running com.itau.test.rest.HttpClientTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.473 s -- in com.itau.test.rest.HttpClientTest
+[INFO] Running com.itau.test.service.impl.QuoteServiceImplTest
+23:31:53.775 [main] WARN com.itau.test.service.impl.QuoteServiceImpl -- Error fetching product: product123. Error message: Cannot invoke "org.springframework.web.client.RestTemplate.exchange(String, org.springframework.http.HttpMethod, org.springframework.http.HttpEntity, org.springframework.core.ParameterizedTypeReference, Object[])" because the return value of "com.itau.test.rest.HttpClient.getRestTemplate()" is null
+23:31:53.803 [main] WARN com.itau.test.service.impl.QuoteServiceImpl -- Error fetching product: invalidProduct. Error message: Cannot invoke "org.springframework.web.client.RestTemplate.exchange(String, org.springframework.http.HttpMethod, org.springframework.http.HttpEntity, org.springframework.core.ParameterizedTypeReference, Object[])" because the return value of "com.itau.test.rest.HttpClient.getRestTemplate()" is null
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.168 s -- in com.itau.test.service.impl.QuoteServiceImplTest
+[INFO] Running com.itau.test.service.impl.QuoteValidationServiceTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.505 s -- in com.itau.test.service.impl.QuoteValidationServiceTest
+[INFO] Running com.itau.test.service.impl.SequenceGeneratorServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.739 s -- in com.itau.test.service.impl.SequenceGeneratorServiceTest
+[INFO] Running com.itau.test.util.CacheUtilTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.548 s -- in com.itau.test.util.CacheUtilTest
+[INFO] Running com.itau.test.util.QueueUtilTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.282 s -- in com.itau.test.util.QueueUtilTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 84, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jacoco-maven-plugin:0.8.8:report (report) @ test-case ---
+[INFO] Loading execution data file /app/target/jacoco.exec
+[INFO] Analyzed bundle 'test-case' with 52 classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:29 min
+[INFO] Finished at: 2024-09-03T23:32:22Z
+[INFO] ------------------------------------------------------------------------
+#

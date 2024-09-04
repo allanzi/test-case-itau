@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QuoteMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">test-case</a> &gt; <a href="index.source.html" class="el_package">com.itau.test.mapper</a> &gt; <span class="el_source">QuoteMapperImpl.java</span></div><h1>QuoteMapperImpl.java</h1><pre class="source lang-java linenums">package com.itau.test.mapper;
+
+import com.itau.test.domain.entity.Customer;
+import com.itau.test.domain.entity.QuoteEntity;
+import com.itau.test.domain.request.QuoteRequest;
+import com.itau.test.domain.response.CustomerResponse;
+import com.itau.test.domain.response.QuoteResponse;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2024-09-03T23:36:07+0000&quot;,
+    comments = &quot;version: 1.5.3.Final, compiler: javac, environment: Java 17.0.2 (Oracle Corporation)&quot;
+)
+@Component
+<span class="fc" id="L22">public class QuoteMapperImpl implements QuoteMapper {</span>
+
+    @Override
+    public QuoteResponse entityToResponse(QuoteEntity entity) {
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        if ( entity == null ) {</span>
+<span class="nc" id="L27">            return null;</span>
+        }
+
+<span class="fc" id="L30">        QuoteResponse.QuoteResponseBuilder quoteResponse = QuoteResponse.builder();</span>
+
+<span class="fc" id="L32">        quoteResponse.customer( customerToCustomerResponse1( entity.getCustomer() ) );</span>
+<span class="fc" id="L33">        quoteResponse.id( String.valueOf( entity.getId() ) );</span>
+<span class="fc" id="L34">        quoteResponse.product_id( entity.getProduct_id() );</span>
+<span class="fc" id="L35">        quoteResponse.offer_id( entity.getOffer_id() );</span>
+<span class="fc" id="L36">        quoteResponse.category( entity.getCategory() );</span>
+<span class="fc" id="L37">        quoteResponse.total_monthly_premium_amount( entity.getTotal_monthly_premium_amount() );</span>
+<span class="fc" id="L38">        quoteResponse.total_coverage_amount( entity.getTotal_coverage_amount() );</span>
+<span class="fc" id="L39">        Map&lt;String, BigDecimal&gt; map = entity.getCoverages();</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if ( map != null ) {</span>
+<span class="nc" id="L41">            quoteResponse.coverages( new LinkedHashMap&lt;String, BigDecimal&gt;( map ) );</span>
+        }
+<span class="fc" id="L43">        List&lt;String&gt; list = entity.getAssistances();</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if ( list != null ) {</span>
+<span class="nc" id="L45">            quoteResponse.assistances( new ArrayList&lt;String&gt;( list ) );</span>
+        }
+<span class="fc" id="L47">        quoteResponse.policy_id( entity.getPolicy_id() );</span>
+<span class="fc" id="L48">        quoteResponse.policty_created_at( entity.getPolicty_created_at() );</span>
+
+<span class="fc" id="L50">        return quoteResponse.build();</span>
+    }
+
+    @Override
+    public List&lt;QuoteResponse&gt; entitiesToResponses(List&lt;QuoteEntity&gt; entities) {
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if ( entities == null ) {</span>
+<span class="nc" id="L56">            return null;</span>
+        }
+
+<span class="fc" id="L59">        List&lt;QuoteResponse&gt; list = new ArrayList&lt;QuoteResponse&gt;( entities.size() );</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for ( QuoteEntity quoteEntity : entities ) {</span>
+<span class="fc" id="L61">            list.add( entityToResponse( quoteEntity ) );</span>
+<span class="fc" id="L62">        }</span>
+
+<span class="fc" id="L64">        return list;</span>
+    }
+
+    @Override
+    public CustomerResponse customerToCustomerResponse(Customer customer) {
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if ( customer == null ) {</span>
+<span class="nc" id="L70">            return null;</span>
+        }
+
+<span class="fc" id="L73">        CustomerResponse.CustomerResponseBuilder customerResponse = CustomerResponse.builder();</span>
+
+<span class="fc" id="L75">        customerResponse.date_of_birth( customer.getDate_of_birth() );</span>
+<span class="fc" id="L76">        customerResponse.document_number( customer.getDocument_number() );</span>
+<span class="fc" id="L77">        customerResponse.phone_number( customer.getPhone_number() );</span>
+<span class="fc" id="L78">        customerResponse.name( customer.getName() );</span>
+<span class="fc" id="L79">        customerResponse.type( customer.getType() );</span>
+<span class="fc" id="L80">        customerResponse.gender( customer.getGender() );</span>
+<span class="fc" id="L81">        customerResponse.email( customer.getEmail() );</span>
+
+<span class="fc" id="L83">        return customerResponse.build();</span>
+    }
+
+    @Override
+    public QuoteEntity requestToEntity(QuoteRequest quoteRequest) {
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if ( quoteRequest == null ) {</span>
+<span class="nc" id="L89">            return null;</span>
+        }
+
+<span class="fc" id="L92">        QuoteEntity.QuoteEntityBuilder quoteEntity = QuoteEntity.builder();</span>
+
+<span class="fc" id="L94">        quoteEntity.customer( customerToCustomer( quoteRequest.getCustomer() ) );</span>
+<span class="fc" id="L95">        quoteEntity.product_id( quoteRequest.getProduct_id() );</span>
+<span class="fc" id="L96">        quoteEntity.offer_id( quoteRequest.getOffer_id() );</span>
+<span class="fc" id="L97">        quoteEntity.category( quoteRequest.getCategory() );</span>
+<span class="fc" id="L98">        quoteEntity.total_monthly_premium_amount( quoteRequest.getTotal_monthly_premium_amount() );</span>
+<span class="fc" id="L99">        quoteEntity.total_coverage_amount( quoteRequest.getTotal_coverage_amount() );</span>
+<span class="fc" id="L100">        Map&lt;String, BigDecimal&gt; map = quoteRequest.getCoverages();</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if ( map != null ) {</span>
+<span class="nc" id="L102">            quoteEntity.coverages( new LinkedHashMap&lt;String, BigDecimal&gt;( map ) );</span>
+        }
+<span class="fc" id="L104">        List&lt;String&gt; list = quoteRequest.getAssistances();</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if ( list != null ) {</span>
+<span class="nc" id="L106">            quoteEntity.assistances( new ArrayList&lt;String&gt;( list ) );</span>
+        }
+
+<span class="fc" id="L109">        return quoteEntity.build();</span>
+    }
+
+    protected CustomerResponse customerToCustomerResponse1(Customer customer) {
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if ( customer == null ) {</span>
+<span class="nc" id="L114">            return null;</span>
+        }
+
+<span class="fc" id="L117">        CustomerResponse.CustomerResponseBuilder customerResponse = CustomerResponse.builder();</span>
+
+<span class="fc" id="L119">        customerResponse.date_of_birth( customer.getDate_of_birth() );</span>
+<span class="fc" id="L120">        customerResponse.document_number( customer.getDocument_number() );</span>
+<span class="fc" id="L121">        customerResponse.phone_number( customer.getPhone_number() );</span>
+<span class="fc" id="L122">        customerResponse.name( customer.getName() );</span>
+<span class="fc" id="L123">        customerResponse.type( customer.getType() );</span>
+<span class="fc" id="L124">        customerResponse.gender( customer.getGender() );</span>
+<span class="fc" id="L125">        customerResponse.email( customer.getEmail() );</span>
+
+<span class="fc" id="L127">        return customerResponse.build();</span>
+    }
+
+    protected Customer customerToCustomer(QuoteRequest.Customer customer) {
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if ( customer == null ) {</span>
+<span class="nc" id="L132">            return null;</span>
+        }
+
+<span class="fc" id="L135">        Customer.CustomerBuilder customer1 = Customer.builder();</span>
+
+<span class="fc" id="L137">        customer1.document_number( customer.getDocument_number() );</span>
+<span class="fc" id="L138">        customer1.name( customer.getName() );</span>
+<span class="fc" id="L139">        customer1.email( customer.getEmail() );</span>
+<span class="fc" id="L140">        customer1.type( customer.getType() );</span>
+<span class="fc" id="L141">        customer1.gender( customer.getGender() );</span>
+<span class="fc" id="L142">        customer1.date_of_birth( customer.getDate_of_birth() );</span>
+<span class="fc" id="L143">        customer1.phone_number( customer.getPhone_number() );</span>
+
+<span class="fc" id="L145">        return customer1.build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

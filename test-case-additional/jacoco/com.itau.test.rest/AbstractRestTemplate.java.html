@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractRestTemplate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">test-case</a> &gt; <a href="index.source.html" class="el_package">com.itau.test.rest</a> &gt; <span class="el_source">AbstractRestTemplate.java</span></div><h1>AbstractRestTemplate.java</h1><pre class="source lang-java linenums">package com.itau.test.rest;
+
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestTemplate;
+
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
+
+import static com.itau.test.constant.BusinessConstant.DEFAULT_CONNECTION_TIMEOUT;
+import static com.itau.test.constant.BusinessConstant.DEFAULT_SOCKET_TIMEOUT;
+
+abstract class AbstractRestTemplate {
+
+    protected RestTemplate restTemplate;
+    protected ConnectionProps connProps;
+
+<span class="fc" id="L19">    protected AbstractRestTemplate(ConnectionProps connProps) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {</span>
+<span class="fc" id="L20">        this.restTemplate = new RestTemplate();</span>
+<span class="fc" id="L21">        this.connProps = validateConnectionProps(connProps);</span>
+<span class="fc" id="L22">        restTemplateSetup();</span>
+<span class="fc" id="L23">    }</span>
+
+    protected abstract void restTemplateSetup() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException;
+
+    private ConnectionProps validateConnectionProps(ConnectionProps connProps) {
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (Objects.isNull(connProps)) {</span>
+<span class="nc" id="L29">            connProps = new ConnectionProps();</span>
+        }
+
+<span class="pc bpc" id="L32" title="2 of 4 branches missed.">        if (Objects.isNull(connProps.getTimeout()) || ObjectUtils.isEmpty(connProps.getTimeout())) {</span>
+<span class="nc" id="L33">            connProps.setTimeout(DEFAULT_CONNECTION_TIMEOUT);</span>
+        }
+
+<span class="pc bpc" id="L36" title="3 of 6 branches missed.">        if (Objects.isNull(connProps.getRead()) || Objects.isNull(connProps.getRead().getTimeout()) || ObjectUtils.isEmpty(connProps.getRead().getTimeout())) {</span>
+<span class="nc" id="L37">            connProps.setRead(new ConnectionProps.Read(DEFAULT_SOCKET_TIMEOUT));</span>
+        }
+
+<span class="fc" id="L40">        return connProps;</span>
+    }
+
+    public RestTemplate getRestTemplate() {
+<span class="fc" id="L44">        return this.restTemplate;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
